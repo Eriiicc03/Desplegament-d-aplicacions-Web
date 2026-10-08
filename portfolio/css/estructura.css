@@ -1,0 +1,435 @@
+/* ==========================================================================
+   ESTRUCTURA
+   La "maqueta" de la página: contenedor, cabecera, portada, secciones,
+   rejillas y pie de página.
+   Se diseña primero para móvil; las @media amplían el diseño en pantallas
+   más grandes:  48rem ≈ tableta · 60rem ≈ portátil.
+   ========================================================================== */
+
+.contenedor {
+  width: min(100% - 2 * var(--margen-lateral), var(--ancho-maximo));
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Cabecera fija
+   -------------------------------------------------------------------------- */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--alto-cabecera);
+  border-bottom: 1px solid transparent;
+  background-color: color-mix(in srgb, var(--color-fondo) 82%, transparent);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+  transition: border-color var(--duracion) ease, background-color var(--duracion) ease;
+}
+
+.cabecera.con-scroll {
+  border-bottom-color: var(--color-linea);
+}
+
+.cabecera__interior {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-m);
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Navegación principal
+   Sin JS: la lista se muestra siempre (con scroll horizontal en móvil).
+   Con JS (.con-js): en móvil se convierte en un menú desplegable.
+   -------------------------------------------------------------------------- */
+.menu {
+  margin-left: auto;
+  min-width: 0;
+}
+
+.menu__lista {
+  display: flex;
+  gap: var(--espacio-2xs);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu__boton {
+  display: none;
+}
+
+.menu__boton .icono--cerrar,
+.menu.esta-abierto .menu__boton .icono--menu {
+  display: none;
+}
+
+.menu.esta-abierto .menu__boton .icono--cerrar {
+  display: block;
+}
+
+@media (max-width: 47.99rem) {
+  .con-js .menu__boton {
+    display: inline-grid;
+  }
+
+  .con-js .menu__lista {
+    position: absolute;
+    top: var(--alto-cabecera);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: var(--espacio-s) var(--margen-lateral) var(--espacio-l);
+    border-bottom: 1px solid var(--color-linea);
+    background-color: var(--color-fondo);
+    box-shadow: var(--sombra-m);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    transition: opacity var(--duracion) ease, transform var(--duracion) var(--curva), visibility var(--duracion);
+  }
+
+  .con-js .menu.esta-abierto .menu__lista {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+
+  .con-js .menu__enlace {
+    display: block;
+    padding: var(--espacio-s) 0;
+    border-bottom: 1px solid var(--color-linea);
+    border-radius: 0;
+    font-size: var(--texto-l);
+  }
+
+  .con-js .menu__enlace[aria-current="location"] {
+    background: none;
+    box-shadow: none;
+    color: var(--color-acento);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Hero / presentación
+   -------------------------------------------------------------------------- */
+.portada {
+  position: relative;
+  padding-block: clamp(3rem, 2rem + 6vw, 7rem) var(--espacio-seccion);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Cuadrícula de fondo: guiño a la maquetación, se desvanece hacia los bordes */
+.portada::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, var(--color-linea) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-linea) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 35%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 30% 35%, #000 20%, transparent 75%);
+  opacity: 0.7;
+}
+
+.portada__rejilla {
+  display: grid;
+  gap: var(--espacio-2xl);
+  align-items: center;
+}
+
+.portada__texto {
+  display: grid;
+  gap: var(--espacio-l);
+  justify-items: start;
+}
+
+.portada__titulo {
+  font-size: var(--texto-portada);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.portada__puesto {
+  margin-top: calc(-1 * var(--espacio-xs));
+  color: var(--color-tinta);
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.portada__puesto strong {
+  color: var(--color-acento);
+  font-weight: 700;
+}
+
+.portada__intro {
+  max-width: 36rem;
+  font-size: var(--texto-l);
+  line-height: 1.6;
+}
+
+.portada__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-s);
+}
+
+.portada__enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-xs) var(--espacio-l);
+  color: var(--color-suave);
+  font-size: var(--texto-s);
+}
+
+.portada__enlaces li,
+.portada__enlaces a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs);
+}
+
+.portada__enlaces a {
+  text-decoration: none;
+}
+
+@media (min-width: 60rem) {
+  .portada__rejilla {
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--espacio-3xl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Secciones genéricas
+   -------------------------------------------------------------------------- */
+.seccion {
+  padding-block: var(--espacio-seccion);
+}
+
+.seccion--alterna {
+  border-block: 1px solid var(--color-linea);
+  background-color: var(--color-fondo-alterno);
+}
+
+/* Dos secciones "alt" seguidas no duplican el borde */
+.seccion--alterna + .seccion--alterna {
+  border-top: 0;
+}
+
+.seccion__cabecera {
+  display: grid;
+  gap: var(--espacio-m);
+  max-width: 46rem;
+  margin-bottom: var(--espacio-2xl);
+}
+
+.seccion__etiqueta {
+  color: var(--color-acento);
+  font-family: var(--fuente-mono);
+  font-size: var(--texto-s);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.seccion__etiqueta::after {
+  content: "";
+  display: inline-block;
+  width: 3rem;
+  height: 1px;
+  margin-left: var(--espacio-s);
+  vertical-align: middle;
+  background-color: currentColor;
+}
+
+.seccion__titulo {
+  font-size: var(--texto-2xl);
+}
+
+.seccion__intro {
+  max-width: 40rem;
+  color: var(--color-suave);
+  font-size: var(--texto-l);
+}
+
+/* --------------------------------------------------------------------------
+   Perfil
+   -------------------------------------------------------------------------- */
+.perfil {
+  display: grid;
+  gap: var(--espacio-2xl);
+  align-items: start;
+}
+
+.perfil__texto {
+  display: grid;
+  gap: var(--espacio-m);
+  max-width: 42rem;
+}
+
+.perfil__entradilla {
+  color: var(--color-tinta);
+  font-size: var(--texto-l);
+  line-height: 1.55;
+}
+
+.fortalezas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--espacio-m);
+  margin-top: var(--espacio-3xl);
+}
+
+@media (min-width: 60rem) {
+  .perfil {
+    grid-template-columns: 1.6fr 1fr;
+    gap: var(--espacio-3xl);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Competencias
+   -------------------------------------------------------------------------- */
+.rejilla-competencias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--espacio-m);
+}
+
+/* --------------------------------------------------------------------------
+   Proyectos
+   -------------------------------------------------------------------------- */
+.proyectos {
+  display: grid;
+  gap: var(--espacio-l);
+}
+
+.practicas {
+  margin-top: var(--espacio-3xl);
+}
+
+@media (min-width: 48rem) {
+  .proyectos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* El proyecto destacado ocupa toda la fila */
+  .proyecto--destacado {
+    grid-column: 1 / -1;
+  }
+
+  /* Si la última tarjeta queda sola en su fila, ocupa todo el ancho */
+  .proyecto:not(.proyecto--destacado):last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64rem) {
+  .proyectos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .proyecto:not(.proyecto--destacado):last-child:nth-child(even) {
+    grid-column: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Trayectoria
+   -------------------------------------------------------------------------- */
+.trayectoria {
+  display: grid;
+  gap: var(--espacio-2xl);
+  align-items: start;
+}
+
+.trayectoria__lateral {
+  display: grid;
+  gap: var(--espacio-m);
+}
+
+@media (min-width: 60rem) {
+  .trayectoria {
+    grid-template-columns: 1.6fr 1fr;
+    gap: var(--espacio-3xl);
+  }
+
+  .trayectoria__lateral {
+    position: sticky;
+    top: calc(var(--alto-cabecera) + var(--espacio-l));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Contacto (bloque invertido)
+   -------------------------------------------------------------------------- */
+.contacto {
+  /* Sobre fondo oscuro el acento se aclara para mantener el contraste AA */
+  --color-acento: #ff7a4d;
+  --color-sobre-acento: #16110e;
+  --color-exito: #4ade80;
+
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-color: var(--color-invertido-fondo);
+  color: var(--color-invertido-suave);
+}
+
+/* Halo de color sutil detrás del título */
+.contacto::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  z-index: -1;
+  width: min(48rem, 90vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-acento) 35%, transparent), transparent 65%);
+  opacity: 0.5;
+}
+
+.contacto__interior {
+  display: grid;
+  gap: var(--espacio-l);
+  justify-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   Pie de página
+   -------------------------------------------------------------------------- */
+.pie {
+  padding-block: var(--espacio-xl);
+  border-top: 1px solid var(--color-linea);
+  color: var(--color-suave);
+  font-size: var(--texto-s);
+}
+
+.pie__interior {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-xs) var(--espacio-l);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pie__arriba {
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   Página 404
+   -------------------------------------------------------------------------- */
+.error {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+}
